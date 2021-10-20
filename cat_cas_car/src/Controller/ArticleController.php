@@ -2,10 +2,11 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ArticleController
+class ArticleController extends AbstractController
 {
     /**
      * @Route("/")
@@ -26,11 +27,15 @@ class ArticleController
      */
     public function show($slug): Response
     {
-        return new Response(
-            sprintf(
-                'Будущая страница статьи: %s!',
-                ucwords(str_replace('-', ' ', $slug))
-            )
-        );
+        $comments = [
+            'Mortem de salvus genetrix, examinare luna!',
+            'Cum assimilatio credere, omnes competitiones locus nobilis, rusticus domuses.',
+            'Bilge rats are the cannibals of the addled amnesty.',
+        ];
+        
+        return $this->render('articles/show.html.twig', [
+            'article' => ucwords(str_replace('-', ' ', $slug)),
+            'comments' => $comments,
+        ]);
     }
 }
