@@ -1,3 +1,5 @@
+@import "~bootstrap";
+
 html {
     position: relative;
     min-height: 100%;
@@ -83,3 +85,6 @@ body {
 .featured-border {
     border-top: 5px solid lightblue !important;
 }
+
+@import "./detail.css";
+
