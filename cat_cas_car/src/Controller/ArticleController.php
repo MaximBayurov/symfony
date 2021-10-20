@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ArticleController extends AbstractController
 {
     /**
-     * @Route("/")
+     * @Route("/", name="app_homepage")
      *
      * @return Response
      */
@@ -19,7 +19,7 @@ class ArticleController extends AbstractController
     }
     
     /**
-     * @Route("/articles/{slug}")
+     * @Route("/articles/{slug}", name="app_article_show")
      *
      * @param $slug
      *
