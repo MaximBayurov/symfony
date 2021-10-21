@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use Demontpx\ParsedownBundle\Parsedown;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -25,7 +27,7 @@ class ArticleController extends AbstractController
      *
      * @return Response
      */
-    public function show($slug): Response
+    public function show($slug, Parsedown $parsedown, AdapterInterface $cache): Response
     {
         $comments = [
             'Mortem de salvus genetrix, examinare luna!',
@@ -33,9 +35,42 @@ class ArticleController extends AbstractController
             'Bilge rats are the cannibals of the addled amnesty.',
         ];
         
+        $articleContent = <<<EOF
+Lorem ipsum **красная точка** dolor sit amet, consectetur adipiscing elit, sed
+do eiusmod tempor incididunt [Сметанка](/) ut labore et dolore magna aliqua.
+Purus viverra accumsan in nisl. Diam vulputate ut pharetra sit amet aliquam. Faucibus a
+pellentesque sit amet porttitor eget dolor morbi non. Est ultricies integer quis auctor
+elit sed. Tristique nulla aliquet enim tortor at. Tristique et egestas quis ipsum. Consequat semper viverra nam
+libero. Lectus quam id leo in vitae turpis. In eu mi bibendum neque egestas congue
+quisque egestas diam. **Красная точка** blandit turpis cursus in hac habitasse platea dictumst quisque.
+
+Ullamcorper malesuada proin libero nunc consequat interdum varius sit amet. Odio pellentesque
+diam volutpat commodo sed egestas. Eget nunc lobortis mattis aliquam. Cursus vitae congue
+mauris rhoncus aenean vel. Pretium viverra suspendisse potenti nullam ac tortor vitae.
+A pellentesque sit amet porttitor eget dolor. Nisl nunc mi ipsum faucibus vitae. Purus sit amet
+luctus venenatis lectus magna fringilla urna. Sit amet tellus cras adipiscing enim. Euismod
+nisi porta lorem mollis aliquam ut porttitor leo.
+
+Morbi blandit cursus risus at ultrices. Adipiscing vitae proin sagittis nisl rhoncus mattis
+rhoncus. Sit amet commodo nulla facilisi. In fermentum et sollicitudin ac orci phasellus
+egestas tellus. Sit amet risus nullam eget felis. Dapibus ultrices in iaculis nunc sed
+augue lacus viverra. Dictum non consectetur a erat nam at. Odio ut enim blandit volutpat
+maecenas. Turpis cursus in hac habitasse platea. Etiam erat velit scelerisque in. Auctor
+neque vitae tempus quam pellentesque nec nam aliquam. Odio pellentesque diam volutpat commodo
+sed egestas egestas. Egestas dui id ornare arcu odio ut.
+EOF;
+        
+        $cache->get(
+            'markdown_' . md5($articleContent),
+            function () use ($parsedown, $articleContent) {
+                return $parsedown->text($articleContent);
+            }
+        );
+        
         return $this->render('articles/show.html.twig', [
             'article' => ucwords(str_replace('-', ' ', $slug)),
             'comments' => $comments,
+            'articleContent' => $articleContent,
         ]);
     }
 }
