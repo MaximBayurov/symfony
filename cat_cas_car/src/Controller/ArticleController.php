@@ -2,9 +2,8 @@
 
 namespace App\Controller;
 
-use Demontpx\ParsedownBundle\Parsedown;
+use App\Service\MarkdownParser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -27,7 +26,7 @@ class ArticleController extends AbstractController
      *
      * @return Response
      */
-    public function show($slug, Parsedown $parsedown, AdapterInterface $cache): Response
+    public function show($slug, MarkdownParser $markdownParser): Response
     {
         $comments = [
             'Mortem de salvus genetrix, examinare luna!',
@@ -60,17 +59,10 @@ neque vitae tempus quam pellentesque nec nam aliquam. Odio pellentesque diam vol
 sed egestas egestas. Egestas dui id ornare arcu odio ut.
 EOF;
         
-        $cache->get(
-            'markdown_' . md5($articleContent),
-            function () use ($parsedown, $articleContent) {
-                return $parsedown->text($articleContent);
-            }
-        );
-        
         return $this->render('articles/show.html.twig', [
             'article' => ucwords(str_replace('-', ' ', $slug)),
             'comments' => $comments,
-            'articleContent' => $articleContent,
+            'articleContent' => $markdownParser->parse($articleContent),
         ]);
     }
 }
