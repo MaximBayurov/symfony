@@ -19,13 +19,9 @@ class ArticleContentProviderController extends AbstractController
     
     /**
      * @Route("/api/v1/article_content/", methods={"POST"}, name="article_content")
-     *
-     * @return JsonResponse
      */
-    public function articleContent(): JsonResponse
+    public function articleContent(Request $request): JsonResponse
     {
-        $request = Request::createFromGlobals();
-        
         $requestData = $request->toArray();
         
         $paragraphs = key_exists('paragraphs', $requestData)
