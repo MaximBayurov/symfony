@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\MarkdownParser;
+use App\Service\SlackClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,8 +27,12 @@ class ArticleController extends AbstractController
      *
      * @return Response
      */
-    public function show($slug, MarkdownParser $markdownParser): Response
+    public function show($slug, MarkdownParser $markdownParser, SlackClient $slackClient): Response
     {
+        if ($slug === 'slack') {
+            $slackClient->send('You can\'t see me, my time is now!');
+        }
+        
         $comments = [
             'Mortem de salvus genetrix, examinare luna!',
             'Cum assimilatio credere, omnes competitiones locus nobilis, rusticus domuses.',
