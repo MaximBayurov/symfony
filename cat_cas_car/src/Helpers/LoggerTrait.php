@@ -9,7 +9,7 @@ trait LoggerTrait
     
     private ?LoggerInterface $logger;
     
-    /**2.7 Генерация кода: symfony/maker-bundle
+    /**
      * @param LoggerInterface $logger
      * @required
      */
