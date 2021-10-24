@@ -2,21 +2,18 @@
 
 namespace App\Service;
 
+use App\Helpers\LoggerTrait;
 use Exception;
 use Nexy\Slack\Client;
-use Psr\Log\LoggerInterface;
 
 class SlackClient
 {
-    
+    use LoggerTrait;
     private Client $slack;
-    private LoggerInterface $logger;
     
-    public function __construct(Client $slack, LoggerInterface $logger)
+    public function __construct(Client $slack)
     {
-        
         $this->slack = $slack;
-        $this->logger = $logger;
     }
     
     public function send(
@@ -33,8 +30,9 @@ class SlackClient
                 ->setText($text);
             
             $this->slack->sendMessage($message);
-        } catch (Exception $exception) {
-            $this->logger->error(
+        }
+        catch (\Http\Client\Exception | Exception $exception){
+            $this->logger?->critical(
                 $exception->getMessage(),
             );
         }
