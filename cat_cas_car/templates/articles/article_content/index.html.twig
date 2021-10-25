@@ -1,0 +1,51 @@
+{% extends 'base_content.html.twig' %}
+
+{% block title %}Генерация контента статьи{% endblock %}
+
+{% block content %}
+<h1>Генерация контента статьи</h1>
+<form>
+    <div class="input-group mb-3">
+        <label>
+            Количество параграфов
+            <input name="paragraphs"
+                   required
+                   class="form-control"
+                   placeholder="Количество параграфов"
+                   value="{{ app.request.query.get('paragraphs') }}"
+            >
+        </label>
+    </div>
+    <div class="input-group mb-3">
+        <label>
+            Количество параграфов
+            <input name="word"
+                   class="form-control"
+                   placeholder="Случайное слово"
+                   value="{{ app.request.query.get('word') }}"
+            >
+        </label>
+    </div>
+    <div class="input-group mb-3">
+        <label>
+            Количество параграфов
+            <input name="wordsCount"
+                   class="form-control"
+                   placeholder="Количество повторений слова"
+                   value="{{ app.request.query.get('wordsCount') }}"
+            >
+        </label>
+    </div>
+
+    <div class="input-group-append mb-3">
+        <button type="submit" class="btn btn-outline-secondary">Сгенерировать</button>
+    </div>
+</form>
+
+<div class="input-group mb-3">
+    <h2>Сгенерированный текст статьи</h2>
+    <div>
+        {{ content|cached_markdown }}
+    </div>
+</div>
+{% endblock %}
