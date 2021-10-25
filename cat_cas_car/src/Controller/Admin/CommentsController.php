@@ -35,7 +35,7 @@ class CommentsController extends AbstractController
             [
                 'articleTitle' => 'В погоне за красной точкой',
                 'comment' => 'The sea-dog waves adventure like a swashbuckling jack.',
-                'createdAt' => new \DateTime('-35 days'),
+                'createdAt' => new \DateTime('-10 months'),
                 'authorName' => 'Сметанка',
             ],
         ];
