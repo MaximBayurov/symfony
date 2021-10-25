@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Homework\ArticleContentProviderInterface;
-use App\Service\MarkdownParser;
 use App\Service\SlackClient;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,12 +35,14 @@ class ArticleController extends AbstractController
      * @Route("/articles/{slug}", name="app_article_show")
      *
      * @param $slug
+     * @param SlackClient $slackClient
+     * @param ArticleContentProviderInterface $articleContent
      *
      * @return Response
+     * @throws Exception
      */
     public function show(
         $slug,
-        MarkdownParser $markdownParser,
         SlackClient $slackClient,
         ArticleContentProviderInterface $articleContent
     ): Response {
@@ -65,7 +67,7 @@ class ArticleController extends AbstractController
         return $this->render('articles/show.html.twig', [
             'article' => ucwords(str_replace('-', ' ', $slug)),
             'comments' => $comments,
-            'articleContent' => $markdownParser->parse($articleContent),
+            'articleContent' => $articleContent,
         ]);
     }
 }
