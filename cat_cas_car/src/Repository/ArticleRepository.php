@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -18,33 +19,47 @@ class ArticleRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Article::class);
     }
-
-    // /**
-    //  * @return Article[] Returns an array of Article objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    
+    /**
+     * @return Article[] Returns an array of Article objects
+     */
+    public function findLatestPublished()
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        return $this->latest($this->published())->getQuery()->getResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Article
+    
+    /**
+     * @return Article[] Returns an array of Article objects
+     */
+    public function findLatest()
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
+        return $this->latest()
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
-    */
+    
+    /**
+     * @return Article[] Returns an array of Article objects
+     */
+    public function findPublished()
+    {
+        return $this->published()
+            ->getQuery()
+            ->getResult();
+    }
+    
+    private function latest(?QueryBuilder $qb = null)
+    {
+        return $this->getOrCreateQueryBuilder($qb)->orderBy('a.publishedAt', 'DESC');
+    }
+    
+    private function published(?QueryBuilder $qb = null)
+    {
+        return $this->getOrCreateQueryBuilder($qb)->andWhere('a.publishedAt IS NOT NULL');
+    }
+    
+    private function getOrCreateQueryBuilder(?QueryBuilder $qb = null): QueryBuilder
+    {
+        return $qb ?? $this->createQueryBuilder('a');
+    }
 }

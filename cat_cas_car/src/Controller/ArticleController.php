@@ -3,10 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Article;
-use App\Homework\ArticleContentProviderInterface;
+use App\Repository\ArticleRepository;
 use App\Service\SlackClient;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,39 +15,44 @@ class ArticleController extends AbstractController
     /**
      * @Route("/", name="app_homepage")
      *
+     * @param ArticleRepository $repository
      * @return Response
      */
-    public function homepage(): Response
+    public function homepage(
+        ArticleRepository $repository
+    ): Response
     {
-        return $this->render('articles/homepage.html.twig');
+        $articles = $repository->findLatestPublished();
+        
+        return $this->render('articles/homepage.html.twig', [
+            'articles' => $articles,
+        ]);
     }
     
     /**
      * @Route("/articles/{slug}", name="app_article_show")
      *
-     * @param $slug
+     * @param Article $article
      * @param SlackClient $slackClient
-     * @param ArticleContentProviderInterface $articleContent
      * @param EntityManagerInterface $entityManager
      * @return Response
      */
     public function show(
-        $slug,
+        Article $article,
         SlackClient $slackClient,
-        ArticleContentProviderInterface $articleContent,
         EntityManagerInterface $entityManager
     ): Response {
         
         $repository = $entityManager->getRepository(Article::class);
-        $article = $repository->findOneBy(['slug' => $slug]);
+        $article = $repository->findOneBy(['slug' => $article->getSlug()]);
         
         if(!$article) {
             throw $this->createNotFoundException(
-                sprintf('Статья: %s не найдена', $slug)
+                sprintf('Статья: %s не найдена', $article->getSlug())
             );
         }
         
-        if ($slug === 'slack') {
+        if ($article->getSlug() === 'slack') {
             $slackClient->send('You can\'t see me, my time is now!');
         }
         
