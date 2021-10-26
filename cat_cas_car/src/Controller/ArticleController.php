@@ -34,17 +34,12 @@ class ArticleController extends AbstractController
      *
      * @param Article $article
      * @param SlackClient $slackClient
-     * @param EntityManagerInterface $entityManager
      * @return Response
      */
     public function show(
         Article $article,
-        SlackClient $slackClient,
-        EntityManagerInterface $entityManager
+        SlackClient $slackClient
     ): Response {
-        
-        $repository = $entityManager->getRepository(Article::class);
-        $article = $repository->findOneBy(['slug' => $article->getSlug()]);
         
         if(!$article) {
             throw $this->createNotFoundException(
