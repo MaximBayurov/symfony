@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Article;
 use App\Homework\ArticleContentProviderInterface;
 use App\Service\SlackClient;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,16 +13,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
-    const RANDOM_WORDS = [
-        "эксплуатация",
-        "стараться",
-        "очередной",
-        "быть",
-        "творчество",
-        "ночь",
-        "миллион",
-    ];
-    
     /**
      * @Route("/", name="app_homepage")
      *
@@ -37,15 +29,25 @@ class ArticleController extends AbstractController
      * @param $slug
      * @param SlackClient $slackClient
      * @param ArticleContentProviderInterface $articleContent
-     *
+     * @param EntityManagerInterface $entityManager
      * @return Response
-     * @throws Exception
      */
     public function show(
         $slug,
         SlackClient $slackClient,
-        ArticleContentProviderInterface $articleContent
+        ArticleContentProviderInterface $articleContent,
+        EntityManagerInterface $entityManager
     ): Response {
+        
+        $repository = $entityManager->getRepository(Article::class);
+        $article = $repository->findOneBy(['slug' => $slug]);
+        
+        if(!$article) {
+            throw $this->createNotFoundException(
+                sprintf('Статья: %s не найдена', $slug)
+            );
+        }
+        
         if ($slug === 'slack') {
             $slackClient->send('You can\'t see me, my time is now!');
         }
@@ -56,18 +58,9 @@ class ArticleController extends AbstractController
             'Bilge rats are the cannibals of the addled amnesty.',
         ];
         
-        $word = "";
-        if (rand(0, 1) <= 0.7) {
-            $wordsCount = count(self::RANDOM_WORDS);
-            $wordIndex = random_int(0, $wordsCount - 1);
-            $word = self::RANDOM_WORDS[$wordIndex];
-        }
-        $articleContent = $articleContent->get(random_int(2, 10), $word, random_int(2, 10));
-        
         return $this->render('articles/show.html.twig', [
-            'article' => ucwords(str_replace('-', ' ', $slug)),
+            'article' => $article,
             'comments' => $comments,
-            'articleContent' => $articleContent,
         ]);
     }
 }
