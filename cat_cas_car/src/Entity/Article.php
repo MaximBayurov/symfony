@@ -51,6 +51,11 @@ class Article
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $imageFilename;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $keywords = [];
     
     public function getId(): ?int
     {
@@ -160,6 +165,18 @@ class Article
     public function dislike(): self
     {
         $this->likeCount--;
+        return $this;
+    }
+
+    public function getKeywords(): ?array
+    {
+        return $this->keywords;
+    }
+
+    public function setKeywords(?array $keywords): self
+    {
+        $this->keywords = $keywords;
+
         return $this;
     }
 }

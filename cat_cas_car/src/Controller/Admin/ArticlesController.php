@@ -21,6 +21,16 @@ class ArticlesController extends AbstractController
         "миллион",
     ];
     
+    const KEYWORDS = [
+        'статья',
+        'машины',
+        'кошки',
+        'английский',
+        'русский',
+        'пираты',
+        'блог'
+    ];
+    
     #[Route('/admin/articles/create', name: 'app_admin_articles_create')]
     public function create(
         ArticleContentProviderInterface $articleContent,
@@ -48,22 +58,39 @@ class ArticlesController extends AbstractController
             );
         }
         
+        $keywords = $this->generateKeywords();
+        
         $article
             ->setAuthor('Кошачий-собачий малыш Котопёс')
             ->setLikeCount(rand(0, 10))
-            ->setImageFilename('car1.jpg');
-    
+            ->setImageFilename('car1.jpg')
+            ->setKeywords($keywords);
+        
         $entityManager->persist($article);
         $entityManager->flush();
         
-        return new Response(sprintf(
-            'Создана статья id: %d slug: %s',
-            $article->getId(),
-            $article->getSlug()
-        ));
+        return new Response(
+            sprintf(
+                'Создана статья id: %d slug: %s',
+                $article->getId(),
+                $article->getSlug()
+            )
+        );
+    }
+    
+    private function generateKeywords(): array
+    {
+        $keywordsCount = random_int(0, count(self::KEYWORDS) - 1);
+        $keys = $keywordsCount > 0
+            ? array_rand(self::KEYWORDS, $keywordsCount)
+            : [];
+        $keys = is_array($keys) ? $keys : [$keys];
         
-        return $this->render('admin/articles/index.html.twig', [
-            'controller_name' => 'ArticlesController',
-        ]);
+        $keywords = [];
+        foreach ($keys as $key) {
+            $keywords[] = self::KEYWORDS[$key];
+        }
+        
+        return $keywords;
     }
 }

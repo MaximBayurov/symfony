@@ -1,9 +1,14 @@
 {% extends 'base_content.html.twig' %}
 
-{% block title %}Статья: {{ article.title }}{% endblock %}
+{% block title %}{{ article.title }} - {{ parent() }}{% endblock %}
+
+{% block meta %}
+    {% if article.keywords|length %}<meta name="keywords" content="{{ article.keywords|join(', ') }}" /> {% endif %}
+{% endblock %}
 
 {% block content_row_class %} {{ parent() }} no-gutters featured-border {% endblock %}
 {% block content_col_class %} {{ parent() }} article-detail {% endblock %}
+
 
 {% block content %}
 <div class="col-sm-12 p-2">
@@ -24,7 +29,7 @@
                 <div class="text-muted align-self-center ml-4 article-detail-hearts"
                     data-item="likes" data-type="like" data-slug="{{ article.slug }}"
                 >
-                    <span data-item="likesCount">{{ article.likeCount }}</span>
+                    <span data-item="likesCount" class="{{ article.likeCount>0 ? 'text-success' : 'text-danger' }}">{{ article.likeCount }}</span>
                     <i class="far fa-heart text-danger"></i>
                 </div>
             </div>
