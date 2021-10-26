@@ -47,6 +47,11 @@ class ArticlesController extends AbstractController
                 new \DateTimeImmutable(sprintf('-%s days', rand(0, 100)))
             );
         }
+        
+        $article
+            ->setAuthor('Кошачий-собачий малыш Котопёс')
+            ->setLikeCount(rand(0, 10))
+            ->setImageFilename('car1.jpg');
     
         $entityManager->persist($article);
         $entityManager->flush();
