@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Article;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,21 +13,28 @@ use Symfony\Component\Routing\Annotation\Route;
 class ArticleLikeController extends AbstractController
 {
     /**
-     * @Route("/articles/{id<\d+>}/like/{type<like|dislike>}", methods={"POST"}, name="app_article_like")
+     * @Route("/articles/{slug}/like/{type<like|dislike>}", methods={"POST"}, name="app_article_like")
      *
      */
-    public function like($id, $type, LoggerInterface $logger): JsonResponse
-    {
+    public function like(
+        Article $article,
+        $type,
+        LoggerInterface $logger,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        
         if ($type === 'like') {
-            $likes = rand(121, 300);
+            $article->like();
             $logger->info('Произошёл лайк!');
         } else {
-            $likes = rand(0, 119);
+            $article->dislike();
             $logger->info('Произошла открутка!');
         }
         
+        $entityManager->flush();
+        
         return $this->json([
-            'likes' => $likes,
+            'likes' => $article->getLikeCount(),
         ]);
     }
 }

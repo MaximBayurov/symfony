@@ -2,51 +2,52 @@
 
 namespace App\Controller;
 
-use App\Homework\ArticleContentProviderInterface;
+use App\Entity\Article;
+use App\Repository\ArticleRepository;
 use App\Service\SlackClient;
-use Exception;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
-    const RANDOM_WORDS = [
-        "эксплуатация",
-        "стараться",
-        "очередной",
-        "быть",
-        "творчество",
-        "ночь",
-        "миллион",
-    ];
-    
     /**
      * @Route("/", name="app_homepage")
      *
+     * @param ArticleRepository $repository
      * @return Response
      */
-    public function homepage(): Response
+    public function homepage(
+        ArticleRepository $repository
+    ): Response
     {
-        return $this->render('articles/homepage.html.twig');
+        $articles = $repository->findLatestPublished();
+        
+        return $this->render('articles/homepage.html.twig', [
+            'articles' => $articles,
+        ]);
     }
     
     /**
      * @Route("/articles/{slug}", name="app_article_show")
      *
-     * @param $slug
+     * @param Article $article
      * @param SlackClient $slackClient
-     * @param ArticleContentProviderInterface $articleContent
-     *
      * @return Response
-     * @throws Exception
      */
     public function show(
-        $slug,
-        SlackClient $slackClient,
-        ArticleContentProviderInterface $articleContent
+        Article $article,
+        SlackClient $slackClient
     ): Response {
-        if ($slug === 'slack') {
+        
+        if(!$article) {
+            throw $this->createNotFoundException(
+                sprintf('Статья: %s не найдена', $article->getSlug())
+            );
+        }
+        
+        if ($article->getSlug() === 'slack') {
             $slackClient->send('You can\'t see me, my time is now!');
         }
         
@@ -56,18 +57,9 @@ class ArticleController extends AbstractController
             'Bilge rats are the cannibals of the addled amnesty.',
         ];
         
-        $word = "";
-        if (rand(0, 1) <= 0.7) {
-            $wordsCount = count(self::RANDOM_WORDS);
-            $wordIndex = random_int(0, $wordsCount - 1);
-            $word = self::RANDOM_WORDS[$wordIndex];
-        }
-        $articleContent = $articleContent->get(random_int(2, 10), $word, random_int(2, 10));
-        
         return $this->render('articles/show.html.twig', [
-            'article' => ucwords(str_replace('-', ' ', $slug)),
+            'article' => $article,
             'comments' => $comments,
-            'articleContent' => $articleContent,
         ]);
     }
 }
