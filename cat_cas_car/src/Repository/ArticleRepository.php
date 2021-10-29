@@ -60,6 +60,6 @@ class ArticleRepository extends ServiceEntityRepository
     
     private function getOrCreateQueryBuilder(?QueryBuilder $qb = null): QueryBuilder
     {
-        return $qb ?? $this->createQueryBuilder('a');
+        return $qb ?? $this->createQueryBuilder('a')->innerJoin('a.comments', 'c')->addSelect('c');
     }
 }
