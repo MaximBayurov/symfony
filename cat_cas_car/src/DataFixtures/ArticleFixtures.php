@@ -68,15 +68,19 @@ class ArticleFixtures extends BaseFixtures
             10,
             function (Article $article) {
                 
+                $randomWord = null;
+                if ($this->faker->boolean(70)) {
+                    $randomWord = $this->faker->randomElement(self::RANDOM_WORDS);
+                }
+                
                 $articleContent = $this->articleContent->get(
-                    $this->faker->numberBetween(2, 5),
-                    $this->faker->randomElement(self::RANDOM_WORDS),
-                    $this->faker->numberBetween(2, 10)
+                    $this->faker->numberBetween(2, 10),
+                    $randomWord,
+                    $this->faker->numberBetween(5, 10)
                 );
     
                 $article
                     ->setTitle($this->faker->randomElement(self::ARTICLE_TITLES))
-                    ->setSlug(strtolower(join('-',$this->faker->words())))
                     ->setBody($articleContent);
     
                 if ($this->faker->boolean(60)) {
