@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Repository\ArticleRepository;
 use App\Service\SlackClient;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -38,7 +37,7 @@ class ArticleController extends AbstractController
      */
     public function show(
         Article $article,
-        SlackClient $slackClient
+        SlackClient $slackClient,
     ): Response {
         
         if(!$article) {
@@ -51,15 +50,8 @@ class ArticleController extends AbstractController
             $slackClient->send('You can\'t see me, my time is now!');
         }
         
-        $comments = [
-            'Mortem de salvus genetrix, examinare luna!',
-            'Cum assimilatio credere, omnes competitiones locus nobilis, rusticus domuses.',
-            'Bilge rats are the cannibals of the addled amnesty.',
-        ];
-        
         return $this->render('articles/show.html.twig', [
             'article' => $article,
-            'comments' => $comments,
         ]);
     }
 }

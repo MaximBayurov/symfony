@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Article;
+use App\Entity\Comment;
 use App\Homework\ArticleContentProviderInterface;
 use DateTimeImmutable;
 use Exception;
@@ -58,6 +59,20 @@ class ArticleFixtures extends BaseFixtures
         $this->articleContent = $articleContent;
     }
     
+    private function generateParagraph(): string
+    {
+        $sentenceCount = $this->faker->numberBetween(1, 3);
+        $wordsCount = $this->faker->numberBetween(5, 10);
+        $sentences = [];
+        while ($sentenceCount > 0) {
+            $words = $this->faker->words($wordsCount);
+            $words[0] = ucwords($words[0]);
+            $sentences[] =  join(' ', $words) . '.';
+            $sentenceCount--;
+        }
+        return join(' ', $sentences);
+    }
+    
     /**
      * @throws Exception
      */
@@ -78,25 +93,37 @@ class ArticleFixtures extends BaseFixtures
                     $randomWord,
                     $this->faker->numberBetween(5, 10)
                 );
-    
+                
                 $article
                     ->setTitle($this->faker->randomElement(self::ARTICLE_TITLES))
                     ->setBody($articleContent);
-    
+                
                 if ($this->faker->boolean(60)) {
                     $article->setPublishedAt(
                         DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-100 days', '-1 days'))
                     );
                 }
-    
+                
                 $article
                     ->setAuthor($this->faker->randomElement(self::ARTICLE_AUTHORS))
                     ->setLikeCount($this->faker->numberBetween(0, 10))
                     ->setImageFilename($this->faker->randomElement(self::ARTICLE_IMAGES))
-                    ->setKeywords($this->faker->randomElements(
-                        self::KEYWORDS,
-                        $this->faker->numberBetween(0,  count(self::KEYWORDS)-1)
-                    ));
+                    ->setKeywords(
+                        $this->faker->randomElements(
+                            self::KEYWORDS,
+                            $this->faker->numberBetween(0, count(self::KEYWORDS) - 1)
+                        )
+                    );
+                
+                $commentsCount = $this->faker->numberBetween(0, 5);
+                for ($k = 0; $k < $commentsCount; $k++) {
+                    $comment = (new Comment())
+                        ->setAuthorName('граф Тефтелькин')
+                        ->setContent($this->generateParagraph())
+                        ->setArticle($article);
+                    
+                    $this->manager->persist($comment);
+                }
             }
         );
     }
