@@ -117,14 +117,27 @@ class ArticleFixtures extends BaseFixtures
                 
                 $commentsCount = $this->faker->numberBetween(0, 5);
                 for ($k = 0; $k < $commentsCount; $k++) {
-                    $comment = (new Comment())
-                        ->setAuthorName('граф Тефтелькин')
-                        ->setContent($this->generateParagraph())
-                        ->setArticle($article);
-                    
-                    $this->manager->persist($comment);
+                    $this->addComment($article);
                 }
             }
         );
+    }
+    
+    /**
+     * @param Article $article
+     */
+    private function addComment(Article $article): void
+    {
+        $comment = (new Comment())
+            ->setAuthorName('граф Тефтелькин')
+            ->setContent($this->generateParagraph())
+            ->setArticle($article)
+            ->setCreatedAt($this->faker->dateTimeBetween('-100 days', '-1 days'));
+        
+        if ($this->faker->boolean(30)) {
+            $comment->setDeletedAt($this->faker->dateTimeThisMonth);
+        }
+        
+        $this->manager->persist($comment);
     }
 }
