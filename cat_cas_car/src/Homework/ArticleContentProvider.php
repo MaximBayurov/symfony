@@ -14,10 +14,12 @@ class ArticleContentProvider implements ArticleContentProviderInterface
     ];
     
     private bool $markWithBold;
+    private PasteWords $pasteWords;
     
-    public function __construct($markWithBold)
+    public function __construct($markWithBold, PasteWords $pasteWords)
     {
         $this->markWithBold = $markWithBold;
+        $this->pasteWords = $pasteWords;
     }
     
     public function get(int $paragraphs, string $word = null, int $wordsCount = 0): string
@@ -34,31 +36,14 @@ class ArticleContentProvider implements ArticleContentProviderInterface
         }
         
         if ($word && $wordsCount > 0) {
-            $markdown = $this->addRandomWords($markdown, $word, $wordsCount);
+            $markdown = $this->pasteWords->paste(
+                $markdown,
+                $this->formatWord($word),
+                $wordsCount
+            );
         }
         
         return $markdown;
-    }
-    
-    private function addRandomWords(string $markdown, string $word, int $wordsCount): string
-    {
-        if (empty($word) && $wordsCount < 1) {
-            return $markdown;
-        }
-    
-        $tokens = [];
-        preg_match_all('/([^ ]*) ([^ ]*)/', $markdown, $tokens);
-        
-        $tokens = reset($tokens);
-        $emptyPlacesCount = count($tokens);
-        
-        while ($wordsCount > 0) {
-            $insertInto = random_int(0, $emptyPlacesCount - 1);
-            $tokens[$insertInto] = $this->formatWord($word) . ' ' . strtolower($tokens[$insertInto]);
-            $wordsCount--;
-        }
-        
-        return implode(" ", $tokens);
     }
     
     private function formatWord(string $word): string

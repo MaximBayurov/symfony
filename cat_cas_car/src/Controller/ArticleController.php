@@ -31,15 +31,19 @@ class ArticleController extends AbstractController
     /**
      * @Route("/articles/{slug}", name="app_article_show")
      *
-     * @param Article $article
      * @param SlackClient $slackClient
+     * @param $slug
+     * @param ArticleRepository $articleRepository
      * @return Response
      */
     public function show(
-        Article $article,
+        $slug,
         SlackClient $slackClient,
+        ArticleRepository $articleRepository
     ): Response {
-        
+    
+        $article = $articleRepository->findBySlug($slug);
+    
         if(!$article) {
             throw $this->createNotFoundException(
                 sprintf('Статья: %s не найдена', $article->getSlug())

@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -66,7 +65,7 @@ class Article
     private $keywords = [];
 
     /**
-     * @ORM\OneToMany(targetEntity=Comment::class, fetch="EXTRA_LAZY", mappedBy="article")
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="article")
      * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $comments;
@@ -203,14 +202,6 @@ class Article
      * @return Collection|Comment[]
      */
     public function getComments(): Collection
-    {
-        return $this->comments;
-    }
-
-    /**
-     * @return Collection|Comment[]
-     */
-    public function getNonDeletedComments(): Collection
     {
         return $this->comments;
     }

@@ -44,7 +44,7 @@
 
 
 <div class="col-sm-12 mb-4">
-    <h3><i class="pr-3 far fa-comment text-secondary"></i>{{ article.nonDeletedComments|length }} Комментария</h3>
+    <h3><i class="pr-3 far fa-comment text-secondary"></i>{{ article.comments|length }} Комментария</h3>
     <hr>
 
     <div class="row mb-4">
@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    {% for comment in article.nonDeletedComments %}
+    {% for comment in article.comments %}
         <div class="row mt-2">
             <div class="col-sm-12">
                 <div class="media">
@@ -66,6 +66,7 @@
                     <div class="media-body align-self-start col-sm-6">
                         <b>{{ comment.authorName }}</b>
                         <small>{{ comment.createdAt|ago }}</small>
+                        {% if comment.deleted %} <span class="badge badge-danger">DELETED</span> {% endif %}
                         <br>
                         <span class="comment">{{ comment.content }}</span>
                     </div>

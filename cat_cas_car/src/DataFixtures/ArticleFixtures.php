@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Article;
 use App\Entity\Comment;
 use App\Homework\ArticleContentProviderInterface;
+use App\Homework\CommentContentProviderInterface;
 use DateTimeImmutable;
 use Exception;
 
@@ -52,25 +53,26 @@ class ArticleFixtures extends BaseFixtures
         'car3.jpeg',
     ];
     
+    const COMMENT_WORDS = [
+        'помещение',
+        'ужас',
+        'ресурс',
+        'явление',
+        'водка',
+        'удар',
+        'больница',
+        'комплекс',
+    ];
+    
     private ArticleContentProviderInterface $articleContent;
+    private CommentContentProviderInterface $commentContent;
     
-    public function __construct(ArticleContentProviderInterface $articleContent)
-    {
+    public function __construct(
+        ArticleContentProviderInterface $articleContent,
+        CommentContentProviderInterface $commentContent
+    ) {
         $this->articleContent = $articleContent;
-    }
-    
-    private function generateParagraph(): string
-    {
-        $sentenceCount = $this->faker->numberBetween(1, 3);
-        $wordsCount = $this->faker->numberBetween(5, 10);
-        $sentences = [];
-        while ($sentenceCount > 0) {
-            $words = $this->faker->words($wordsCount);
-            $words[0] = ucwords($words[0]);
-            $sentences[] =  join(' ', $words) . '.';
-            $sentenceCount--;
-        }
-        return join(' ', $sentences);
+        $this->commentContent = $commentContent;
     }
     
     /**
@@ -115,7 +117,7 @@ class ArticleFixtures extends BaseFixtures
                         )
                     );
                 
-                $commentsCount = $this->faker->numberBetween(0, 5);
+                $commentsCount = $this->faker->numberBetween(2, 10);
                 for ($k = 0; $k < $commentsCount; $k++) {
                     $this->addComment($article);
                 }
@@ -130,13 +132,24 @@ class ArticleFixtures extends BaseFixtures
     {
         $comment = (new Comment())
             ->setAuthorName('граф Тефтелькин')
-            ->setContent($this->generateParagraph())
             ->setArticle($article)
             ->setCreatedAt($this->faker->dateTimeBetween('-100 days', '-1 days'));
         
         if ($this->faker->boolean(30)) {
             $comment->setDeletedAt($this->faker->dateTimeThisMonth);
         }
+        
+        $randomWord = '';
+        if ($this->faker->boolean(70)) {
+            $randomWord = $this->faker->randomElement(self::COMMENT_WORDS);
+        }
+    
+        $comment->setContent(
+            $this->commentContent->get(
+                $randomWord,
+                $this->faker->numberBetween(1, 5)
+            )
+        );
         
         $this->manager->persist($comment);
     }
