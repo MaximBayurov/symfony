@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Repository\ArticleRepository;
 use App\Service\SlackClient;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -32,15 +31,19 @@ class ArticleController extends AbstractController
     /**
      * @Route("/articles/{slug}", name="app_article_show")
      *
-     * @param Article $article
      * @param SlackClient $slackClient
+     * @param $slug
+     * @param ArticleRepository $articleRepository
      * @return Response
      */
     public function show(
-        Article $article,
-        SlackClient $slackClient
+        $slug,
+        SlackClient $slackClient,
+        ArticleRepository $articleRepository
     ): Response {
-        
+    
+        $article = $articleRepository->findBySlug($slug);
+    
         if(!$article) {
             throw $this->createNotFoundException(
                 sprintf('Статья: %s не найдена', $article->getSlug())
@@ -51,15 +54,8 @@ class ArticleController extends AbstractController
             $slackClient->send('You can\'t see me, my time is now!');
         }
         
-        $comments = [
-            'Mortem de salvus genetrix, examinare luna!',
-            'Cum assimilatio credere, omnes competitiones locus nobilis, rusticus domuses.',
-            'Bilge rats are the cannibals of the addled amnesty.',
-        ];
-        
         return $this->render('articles/show.html.twig', [
             'article' => $article,
-            'comments' => $comments,
         ]);
     }
 }
