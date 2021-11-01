@@ -27,10 +27,7 @@
                                 </div>
                                 <a class="col p-2 px-4 d-flex flex-column article-item" href="{{ path('app_article_show', {'slug': article.slug}) }}">
                                     <h5 class="mb-2">{{ article.title}} {% if article.comments|length > 0 %}<span class="badge badge-info article-comments">{{ article.comments|length }} комментов</span>{% endif %}</h5>
-                                    <div class="mb-2 d-flex">
-                                        <span class="badge badge-pill badge-secondary mr-2">Дрындулет</span>
-                                        <span class="badge badge-pill badge-secondary mr-2">Карета</span>
-                                    </div>
+                                    {% include 'partial/article_tags.html.twig' with { tags: article.tags } %}
                                     <div class="d-flex justify-content-between">
                                         <div class="text-muted align-self-center">
                                             <img class="article-author-img rounded-circle" src="{{ article.authorAvatarPath }}" alt=""> {{ article.author }}</div>

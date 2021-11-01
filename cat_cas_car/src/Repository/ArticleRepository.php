@@ -60,7 +60,13 @@ class ArticleRepository extends ServiceEntityRepository
     
     private function getOrCreateQueryBuilder(?QueryBuilder $qb = null): QueryBuilder
     {
-        return $qb ?? $this->createQueryBuilder('a')->innerJoin('a.comments', 'c')->addSelect('c');
+        return $qb ??
+            $this
+                ->createQueryBuilder('a')
+                ->leftJoin('a.comments', 'c')
+                ->addSelect('c')
+                ->leftJoin('a.tags', 't')
+                ->addSelect('t');
     }
     
     public function findBySlug($slug)

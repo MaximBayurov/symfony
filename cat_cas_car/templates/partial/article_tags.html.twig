@@ -1,0 +1,9 @@
+{% if article.tags|filter(tag => tag.deletedAt == null)|length %}
+    <div class="mb-2 d-flex">
+        {% for tag in article.tags %}
+            {% if tag.deletedAt == null %}
+            <span class="badge badge-pill badge-secondary mr-2">{{ tag.name }}</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
