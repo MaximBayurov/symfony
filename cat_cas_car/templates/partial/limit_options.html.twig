@@ -1,0 +1,27 @@
+{% set limit = app.request.query.getInt('limit') %}
+{% set hasLimit = app.request.query.has('limit') %}
+{% set limitOptions = [
+    {
+        'value': 10,
+        'text': 'Десять',
+        'selected': hasLimit ? 10 is same as limit : false,
+    },
+    {
+        'value': 20,
+        'text': 'Двадцать',
+        'selected': hasLimit ? 20 is same as limit : true,
+    },
+    {
+        'value': 50,
+        'text': 'Пятьдесят',
+        'selected': hasLimit ? 50 is same as limit : false,
+    },
+] %}
+
+<div class="input-group mb-3">
+    <select class="browser-default custom-select" name="limit">
+        {% for limit in limitOptions %}
+            <option value="{{ limit.value }}" {% if limit.selected %} selected {% endif %}>{{ limit.text }}</option>
+        {% endfor %}
+    </select>
+</div>

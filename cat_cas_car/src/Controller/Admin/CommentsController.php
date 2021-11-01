@@ -3,8 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Repository\CommentRepository;
-use App\Service\LimitOptions;
-use Carbon\Carbon;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,8 +15,7 @@ class CommentsController extends AbstractController
     public function index(
         Request $request,
         CommentRepository $commentRepository,
-        PaginatorInterface  $paginator,
-        LimitOptions $limitOptions
+        PaginatorInterface  $paginator
     ): Response {
     
         $query = $request->query->get('q');
@@ -33,7 +30,6 @@ class CommentsController extends AbstractController
     
         return $this->render('admin/comments/index.html.twig', [
             'pagination' => $pagination,
-            'limitOptions' => $limitOptions->get($limit),
         ]);
     }
 }

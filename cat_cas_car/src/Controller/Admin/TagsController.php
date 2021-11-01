@@ -2,9 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Repository\CommentRepository;
 use App\Repository\TagRepository;
-use App\Service\LimitOptions;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,8 +15,7 @@ class TagsController extends AbstractController
     public function index(
         Request $request,
         TagRepository $tagRepository,
-        PaginatorInterface  $paginator,
-        LimitOptions $limitOptions
+        PaginatorInterface  $paginator
     ): Response {
     
         $query = $request->query->get('q');
@@ -33,8 +30,6 @@ class TagsController extends AbstractController
     
         return $this->render('admin/tags/index.html.twig', [
             'pagination' => $pagination,
-            'title' => "Управление тегами",
-            'limitOptions' => $limitOptions->get($limit)
         ]);
     }
 }
