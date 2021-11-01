@@ -3,13 +3,13 @@
 namespace App\DataFixtures;
 
 use App\Entity\Article;
-use App\Entity\Comment;
+use App\Entity\Tag;
 use App\Homework\ArticleContentProviderInterface;
-use App\Homework\CommentContentProviderInterface;
 use DateTimeImmutable;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Exception;
 
-class ArticleFixtures extends BaseFixtures
+class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
 {
     const RANDOM_WORDS = [
         "эксплуатация",
@@ -53,26 +53,11 @@ class ArticleFixtures extends BaseFixtures
         'car3.jpeg',
     ];
     
-    const COMMENT_WORDS = [
-        'помещение',
-        'ужас',
-        'ресурс',
-        'явление',
-        'водка',
-        'удар',
-        'больница',
-        'комплекс',
-    ];
-    
     private ArticleContentProviderInterface $articleContent;
-    private CommentContentProviderInterface $commentContent;
     
-    public function __construct(
-        ArticleContentProviderInterface $articleContent,
-        CommentContentProviderInterface $commentContent
-    ) {
+    public function __construct(ArticleContentProviderInterface $articleContent)
+    {
         $this->articleContent = $articleContent;
-        $this->commentContent = $commentContent;
     }
     
     /**
@@ -115,42 +100,21 @@ class ArticleFixtures extends BaseFixtures
                             self::KEYWORDS,
                             $this->faker->numberBetween(0, count(self::KEYWORDS) - 1)
                         )
-                    );
-                
-                $commentsCount = $this->faker->numberBetween(2, 10);
-                for ($k = 0; $k < $commentsCount; $k++) {
-                    $this->addComment($article);
+                    )
+                ;
+    
+                for ($i = 0; $i < $this->faker->numberBetween(0, 5); $i++) {
+                    $tag = $this->getRandomReference(Tag::class);
+                    $article->addTag($tag);
                 }
             }
         );
     }
     
-    /**
-     * @param Article $article
-     */
-    private function addComment(Article $article): void
+    public function getDependencies()
     {
-        $comment = (new Comment())
-            ->setAuthorName('граф Тефтелькин')
-            ->setArticle($article)
-            ->setCreatedAt($this->faker->dateTimeBetween('-100 days', '-1 days'));
-        
-        if ($this->faker->boolean(30)) {
-            $comment->setDeletedAt($this->faker->dateTimeThisMonth);
-        }
-        
-        $randomWord = '';
-        if ($this->faker->boolean(70)) {
-            $randomWord = $this->faker->randomElement(self::COMMENT_WORDS);
-        }
-    
-        $comment->setContent(
-            $this->commentContent->get(
-                $randomWord,
-                $this->faker->numberBetween(1, 5)
-            )
-        );
-        
-        $this->manager->persist($comment);
+        return [
+            TagFixtures::class,
+        ];
     }
 }

@@ -19,7 +19,7 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
     
-    public function findAllWithSearch(?string $search, bool $withDeleted = false)
+    public function findAllWithSearchQuery(?string $search, bool $withDeleted = false)
     {
         $queryBuilder = $this->createQueryBuilder('c');
     
@@ -36,8 +36,6 @@ class CommentRepository extends ServiceEntityRepository
         return $queryBuilder
             ->innerJoin('c.article', 'a')
             ->addSelect('a')
-            ->orderBy('c.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->orderBy('c.createdAt', 'DESC');
     }
 }

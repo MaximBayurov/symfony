@@ -1,0 +1,46 @@
+{% extends 'base_content.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ title}} ({{ pagination.totalItemCount }})</h1>
+
+    {% include 'partial/filter.html.twig' %}
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Символьный код</th>
+            <th>Статьи</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tag in pagination %}
+            <tr>
+                <td>{{ tag.name }}</td>
+                <td>{{ tag.slug }}</td>
+                <td>
+                    {{ tag.articles|length }} {% if tag.deleted %} <span class="badge badge-danger">DELETED</span> {% endif %}
+                    {% if tag.articles|length %}
+                    <ul class="list-group list-group-flush">
+                        {% for article in tag.articles %}
+                          <li class="list-group-item">
+                              <a href="{{ path('app_article_show', {slug: article.slug}) }}">{{ article.title }}</a>
+                          </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">
+                    Совпадений не найдено
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {{ knp_pagination_render(pagination) }}
+{% endblock %}

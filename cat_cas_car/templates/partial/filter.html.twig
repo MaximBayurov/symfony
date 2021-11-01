@@ -1,0 +1,34 @@
+<form>
+    <div class="input-group mb-3">
+        <input type="text"
+               name="q"
+               class="form-control"
+               placeholder="Найти..."
+               value="{{ app.request.query.get('q') }}"
+        >
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-outline-secondary"><i class="fa fa-search"></i></button>
+        </div>
+    </div>
+    {% if limitOptions|length > 0 %}
+    <div class="input-group mb-3">
+        <select class="browser-default custom-select" name="limit">
+            {% for limit in limitOptions %}
+                <option value="{{ limit.value }}" {% if limit.selected %} selected {% endif %}>{{ limit.text }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+    <div class="input-group mb-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="checkbox"
+                       name="showDeleted"
+                       class="form-check-input"
+                        {% if app.request.query.has('showDeleted') %} checked {% endif %}
+                >
+                Показать удалённые
+            </label>
+        </div>
+    </div>
+</form>
