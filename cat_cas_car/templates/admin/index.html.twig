@@ -1,0 +1,12 @@
+{% extends 'base_content.html.twig' %}
+
+{% block title %}Главная страница в административном разделе{% endblock %}
+
+{% block content %}
+    <h1>Список страниц:</h1>
+    <ul>
+        <li><a href="{{ path('app_admin_articles_create') }}">Создание статьи</a></li>
+        <li><a href="{{ path('app_admin_comments') }}">Управление комментариями</a></li>
+        <li><a href="{{ path('app_admin_tags') }}">Управление тегами</a></li>
+    </ul>
+{% endblock %}
