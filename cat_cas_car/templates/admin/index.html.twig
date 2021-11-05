@@ -1,0 +1,18 @@
+{% extends 'base_content.html.twig' %}
+
+{% block title %}Главная страница в административном разделе{% endblock %}
+
+{% block content %}
+    <h1>Список страниц:</h1>
+    <ul>
+        {% if is_granted("ROLE_ADMIN_ARTICLE") %}
+        <li><a href="{{ path('app_admin_articles_create') }}">Создание статьи</a></li>
+        {% endif %}
+        {% if is_granted("ROLE_ADMIN_COMMENT") %}
+        <li><a href="{{ path('app_admin_comments') }}">Управление комментариями</a></li>
+        {% endif %}
+        {% if is_granted("ROLE_ADMIN_TAG") %}
+        <li><a href="{{ path('app_admin_tags') }}">Управление тегами</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}

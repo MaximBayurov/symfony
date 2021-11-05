@@ -17,9 +17,12 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 {
+    use TargetPathTrait;
+    
     private UserRepository $userRepository;
     private UrlGeneratorInterface $urlGenerator;
     private CsrfTokenManagerInterface $csrfTokenManager;
@@ -81,7 +84,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
             'email' => $credentials['email'],
         ]);
         
-        if (!$user->getIsActive()) {
+        if (!empty($user) && !$user->getIsActive()) {
             throw new CustomUserMessageAuthenticationException("User isn't active!");
         }
         
@@ -95,8 +98,9 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
     {
+        $path = $this->getTargetPath($request->getSession(), $providerKey);
         return new RedirectResponse(
-            $this->urlGenerator->generate('app_homepage')
+            $path ?? $this->urlGenerator->generate('app_homepage')
         );
     }
     
