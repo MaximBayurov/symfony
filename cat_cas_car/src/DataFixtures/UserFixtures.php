@@ -2,8 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\ApiToken;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use function Clue\StreamFilter\fun;
 
 class UserFixtures extends BaseFixtures
 {
@@ -26,6 +28,8 @@ class UserFixtures extends BaseFixtures
                     ->setIsActive(true)
                     ->setRoles(["ROLE_ADMIN"])
                 ;
+                
+                $this->manager->persist(new ApiToken($user));
             }
         );
         
@@ -39,6 +43,10 @@ class UserFixtures extends BaseFixtures
                     ->setIsActive(true)
                     ->setRoles(["ROLE_API"])
                 ;
+                
+                for ($i = 0; $i < 3; $i++) {
+                    $this->manager->persist(new ApiToken($user));
+                }
             }
         );
         
@@ -56,6 +64,8 @@ class UserFixtures extends BaseFixtures
                 if ($this->faker->boolean(30)) {
                     $user->setIsActive(false);
                 }
+                
+                $this->manager->persist(new ApiToken($user));
             }
         );
     }
