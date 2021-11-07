@@ -175,6 +175,15 @@
     "php-http/stopwatch-plugin": {
         "version": "1.4.0"
     },
+    "phpdocumentor/reflection-common": {
+        "version": "2.2.0"
+    },
+    "phpdocumentor/reflection-docblock": {
+        "version": "5.3.0"
+    },
+    "phpdocumentor/type-resolver": {
+        "version": "1.5.1"
+    },
     "psr/cache": {
         "version": "2.0.0"
     },
@@ -414,6 +423,9 @@
     "symfony/security-http": {
         "version": "v5.3.10"
     },
+    "symfony/serializer": {
+        "version": "v5.3.10"
+    },
     "symfony/service-contracts": {
         "version": "v2.4.0"
     },
@@ -508,5 +520,8 @@
     },
     "twig/twig": {
         "version": "v3.3.3"
+    },
+    "webmozart/assert": {
+        "version": "1.10.0"
     }
 }
