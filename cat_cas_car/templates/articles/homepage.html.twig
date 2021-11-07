@@ -30,7 +30,7 @@
                                     {% include 'partial/article_tags.html.twig' with { tags: article.tags } %}
                                     <div class="d-flex justify-content-between">
                                         <div class="text-muted align-self-center">
-                                            <img class="article-author-img rounded-circle" src="{{ article.authorAvatarPath }}" alt=""> {{ article.author }}</div>
+                                            <img class="article-author-img rounded-circle" src="{{ article.author.avatarUrl }}" alt=""> {{ article.author.firstName }}</div>
                                         <div class="text-muted align-self-center">{{ article.publishedAt ? article.publishedAt|ago }}</div>
                                     </div>
                                 </a>
