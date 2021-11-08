@@ -19,8 +19,8 @@
             {% include 'partial/article_tags.html.twig' with { tags: article.tags } %}
             <div class="d-flex">
                 <div class="text-muted align-self-center">
-                    <img class="article-author-img rounded-circle mr-2" src="{{ article.authorAvatarPath }}" alt="">
-                    {{ article.author }}
+                    <img class="article-author-img rounded-circle mr-2" src="{{ article.author.avatarUrl }}" alt="">
+                    {{ article.author.firstName }}
                 </div>
                 <div class="text-muted align-self-center ml-4">{{ article.publishedAt ? article.publishedAt|ago : 'Неопубликована' }}</div>
                 <div class="text-muted align-self-center ml-4 article-detail-hearts"

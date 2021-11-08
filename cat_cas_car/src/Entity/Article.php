@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
@@ -21,59 +22,71 @@ class Article
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups(["main"])]
     private $id;
     
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["main"])]
     private $title;
     
     /**
      * @Gedmo\Slug(fields={"title"})
      * @ORM\Column(type="string", length=100, unique=true)
      */
+    #[Groups(["main"])]
     private $slug;
     
     /**
      * @ORM\Column(type="text", nullable=true)
      */
+    #[Groups(["main"])]
     private $body;
     
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
+    #[Groups(["main"])]
     private $publishedAt;
-    
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $author;
     
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
+    #[Groups(["main"])]
     private $likeCount;
     
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
+    #[Groups(["main"])]
     private $imageFilename;
 
     /**
      * @ORM\Column(type="array", nullable=true)
      */
+    #[Groups(["main"])]
     private $keywords = [];
 
     /**
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="article")
      * @ORM\OrderBy({"createdAt" = "DESC"})
      */
+    #[Groups(["main"])]
     private $comments;
 
     /**
      * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="articles")
      */
+    #[Groups(["main"])]
     private $tags;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=user::class, inversedBy="articles")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    #[Groups(["main"])]
+    private $author;
 
     public function __construct()
     {
@@ -134,18 +147,6 @@ class Article
         return $this;
     }
     
-    public function getAuthor(): ?string
-    {
-        return $this->author;
-    }
-    
-    public function setAuthor(?string $author): self
-    {
-        $this->author = $author;
-        
-        return $this;
-    }
-    
     public function getLikeCount(): ?int
     {
         return $this->likeCount;
@@ -173,11 +174,6 @@ class Article
     public function getImagePath(): string
     {
         return '/images/' . $this->getImageFilename();
-    }
-    
-    public function getAuthorAvatarPath(): string
-    {
-        return 'https://robohash.org/'. $this->getAuthor() .'?set=set4';
     }
     
     public function like(): self
@@ -254,6 +250,18 @@ class Article
     public function removeTag(Tag $tag): self
     {
         $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    public function getAuthor(): ?user
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?user $author): self
+    {
+        $this->author = $author;
 
         return $this;
     }

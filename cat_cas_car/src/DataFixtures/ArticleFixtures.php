@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Article;
 use App\Entity\Tag;
+use App\Entity\User;
 use App\Homework\ArticleContentProviderInterface;
 use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -36,15 +37,6 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
         'Когда в машинах поставят лоток?',
         'В погоне за красной точкой',
         'В чем смысл жизни сосисок',
-    ];
-    
-    const ARTICLE_AUTHORS = [
-        'Николай',
-        'Mr. White',
-        'Барон Сосискин',
-        'Сметанка',
-        'Рыжик',
-        'Jhon Seena'
     ];
     
     const ARTICLE_IMAGES = [
@@ -92,7 +84,7 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
                 }
                 
                 $article
-                    ->setAuthor($this->faker->randomElement(self::ARTICLE_AUTHORS))
+                    ->setAuthor($this->getRandomReference(User::class))
                     ->setLikeCount($this->faker->numberBetween(0, 10))
                     ->setImageFilename($this->faker->randomElement(self::ARTICLE_IMAGES))
                     ->setKeywords(
@@ -115,6 +107,7 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
     {
         return [
             TagFixtures::class,
+            UserFixtures::class,
         ];
     }
 }

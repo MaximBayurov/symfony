@@ -1,3 +1,7 @@
 GET https://localhost:8000/api/v1/user
 Accept: application/json
 Authorization: Bearer a291e3fa53cb8b36a7c0d658bcb42d4adf8a2b44
+
+###
+GET https://localhost:8000/api/v1/articles/1
+Accept: application/json

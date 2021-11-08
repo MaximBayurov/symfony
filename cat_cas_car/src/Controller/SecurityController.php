@@ -2,9 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
@@ -32,5 +37,44 @@ class SecurityController extends AbstractController
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+    }
+    
+    /**
+     * @Route("/register", name="app_register")
+     */
+    public function register(
+        Request $request,
+        UserPasswordEncoderInterface $passwordEncoder,
+        GuardAuthenticatorHandler $guard,
+        LoginFormAuthenticator $authenticator
+    ) {
+        if ($request->isMethod('POST')) {
+            $user = new User();
+            
+            $user
+                ->setFirstName($request->request->get('firstName'))
+                ->setEmail($request->request->get('email'))
+                ->setPassword($passwordEncoder->encodePassword($user, $request->request->get('password')))
+                ->setIsActive(true)
+            ;
+            
+            $manager = $this->getDoctrine()->getManager();
+            
+            $manager->persist($user);
+            $manager->flush();
+            
+            return $guard->authenticateUserAndHandleSuccess(
+                $user,
+                $request,
+                $authenticator,
+                'main'
+            );
+        }
+        
+        return $this->render(
+            'security/register.html.twig', [
+                'error' => '',
+            ]
+        );
     }
 }
