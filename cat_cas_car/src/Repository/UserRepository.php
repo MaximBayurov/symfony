@@ -35,4 +35,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->persist($user);
         $this->_em->flush();
     }
+    
+    public function findAllSortedByName()
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.firstName', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }

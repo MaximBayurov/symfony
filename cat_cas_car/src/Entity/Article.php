@@ -82,11 +82,16 @@ class Article
     private $tags;
 
     /**
-     * @ORM\ManyToOne(targetEntity=user::class, inversedBy="articles")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
      */
     #[Groups(["main"])]
     private $author;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $description;
 
     public function __construct()
     {
@@ -138,6 +143,11 @@ class Article
     public function getPublishedAt(): ?\DateTimeImmutable
     {
         return $this->publishedAt;
+    }
+    
+    public function isPublished(): bool
+    {
+        return $this->getPublishedAt() !== null;
     }
     
     public function setPublishedAt(?\DateTimeImmutable $publishedAt): self
@@ -262,6 +272,18 @@ class Article
     public function setAuthor(?user $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }
