@@ -48,7 +48,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->getResult();
     }
     
-    private function latest(?QueryBuilder $qb = null)
+    public function latest(?QueryBuilder $qb = null)
     {
         return $this->getOrCreateQueryBuilder($qb)->orderBy('a.publishedAt', 'DESC');
     }
@@ -72,5 +72,22 @@ class ArticleRepository extends ServiceEntityRepository
     public function findBySlug($slug)
     {
         return $this->getOrCreateQueryBuilder()->andWhere('a.slug = :slug')->setParameter('slug', "$slug")->getQuery()->getSingleResult();
+    }
+    
+    public function findAllWithSearchQuery($search) {
+        
+        $queryBuilder = $this->createQueryBuilder('a')
+            ->leftJoin('a.author', 'u')
+            ->addSelect('u')
+        ;
+        
+        if ($search) {
+            $queryBuilder
+                ->andWhere('a.title LIKE :search OR a.body LIKE :search OR u.firstName LIKE :search')
+                ->setParameter('search', "%$search%");
+        }
+        
+        return $queryBuilder
+            ->orderBy('a.createdAt', 'DESC');
     }
 }

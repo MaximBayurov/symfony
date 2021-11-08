@@ -1,20 +1,44 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_content.html.twig' %}
 
-{% block title %}Hello ArticlesController!{% endblock %}
+{% block title %}Управление статьями{% endblock %}
 
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% block content %}
+    <div class="admin-header-with-button mb-3">
+        <h1>Управление Статьями</h1>
+        <div><a class="btn btn-primary" href="{{ path('app_admin_articles_create') }}">Создать новую статью</a></div>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% include 'partial/filter.html.twig' with {'hideShowDeleted': true}%}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/maxim/PhpstormProjects/symfony/cat_cas_car/src/Controller/Admin/ArticlesController.php'|file_link(0) }}">src/Controller/Admin/ArticlesController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/maxim/PhpstormProjects/symfony/cat_cas_car/templates/admin/articles/index.html.twig'|file_link(0) }}">templates/admin/articles/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Заголовок</th>
+            <th>Описание</th>
+            <th>Автор</th>
+            <th>Опубликована</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for article in pagination %}
+            <tr>
+                <td>
+                    <a href="{{ path('app_article_show', {slug: article.slug }) }}">
+                        {{ article.title }}
+                    </a>
+                </td>
+                <td>{{ article.description }}</td>
+                <td>{{ article.author.firstName }}</td>
+                <td><i class="fas fa-{{ article.isPublished ? 'check text-success' : 'times text-danger' }}"></i></td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">
+                    Совпадений не найдено
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {{ knp_pagination_render(pagination) }}
 {% endblock %}

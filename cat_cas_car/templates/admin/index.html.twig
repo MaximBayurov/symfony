@@ -7,6 +7,7 @@
     <ul>
         {% if is_granted("ROLE_ADMIN_ARTICLE") %}
         <li><a href="{{ path('app_admin_articles_create') }}">Создание статьи</a></li>
+        <li><a href="{{ path('app_admin_articles') }}">Управление статьями</a></li>
         {% endif %}
         {% if is_granted("ROLE_ADMIN_COMMENT") %}
         <li><a href="{{ path('app_admin_comments') }}">Управление комментариями</a></li>

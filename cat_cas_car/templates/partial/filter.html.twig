@@ -11,6 +11,7 @@
         </div>
     </div>
     {% include '/partial/limit_options.html.twig' %}
+    {% if hideShowDeleted == false %}
     <div class="input-group mb-3">
         <div class="form-check">
             <label class="form-check-label">
@@ -23,4 +24,5 @@
             </label>
         </div>
     </div>
+    {% endif %}
 </form>

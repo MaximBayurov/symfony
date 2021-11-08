@@ -59,7 +59,7 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
     {
         $this->createMany(
             Article::class,
-            10,
+            25,
             function (Article $article) {
                 
                 $randomWord = null;
@@ -75,7 +75,9 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
                 
                 $article
                     ->setTitle($this->faker->randomElement(self::ARTICLE_TITLES))
-                    ->setBody($articleContent);
+                    ->setBody($articleContent)
+                    ->setDescription(mb_strimwidth($articleContent, 0, 50, '...'))
+                ;
                 
                 if ($this->faker->boolean(60)) {
                     $article->setPublishedAt(

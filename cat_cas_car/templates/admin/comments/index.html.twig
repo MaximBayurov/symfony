@@ -5,7 +5,7 @@
 {% block content %}
 <h1>Управление комментариями ({{ pagination.totalItemCount }})</h1>
 
-{% include 'partial/filter.html.twig' %}
+{% include 'partial/filter.html.twig' with {'hideShowDeleted': false}%}
 
 <table class="table table-striped">
     <thead>
