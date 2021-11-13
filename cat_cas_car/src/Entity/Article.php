@@ -9,9 +9,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
+ * @Assert\EnableAutoMapping()
  */
 class Article
 {
@@ -27,6 +30,8 @@ class Article
     
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="У вашей статьи должен быть заголовок!")
+     * @Assert\Length(min="3", minMessage="Название статьи должно быть минимум 3 символа в длину!")
      */
     #[Groups(["main"])]
     private $title;
@@ -34,12 +39,14 @@ class Article
     /**
      * @Gedmo\Slug(fields={"title"})
      * @ORM\Column(type="string", length=100, unique=true)
+     * @Assert\DisableAutoMapping()
      */
     #[Groups(["main"])]
     private $slug;
     
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Assert\NotBlank(message="Обязательное поле!")
      */
     #[Groups(["main"])]
     private $body;
@@ -84,14 +91,32 @@ class Article
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotBlank(message="Обязательное поле!")
      */
     #[Groups(["main"])]
     private $author;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(max="100", maxMessage="Описание статьи должно быть не длинее 100 символов!")
      */
     private $description;
+    
+    /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime")
+     * @Assert\DisableAutoMapping()
+     */
+    protected $createdAt;
+    
+    /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(type="datetime")
+     * @Assert\DisableAutoMapping()
+     */
+    protected $updatedAt;
 
     public function __construct()
     {
@@ -109,7 +134,7 @@ class Article
         return $this->title;
     }
     
-    public function setTitle(string $title): self
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
         
@@ -286,5 +311,23 @@ class Article
         $this->description = $description;
 
         return $this;
+    }
+    
+    /**
+     * @Assert\Callback()
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        if (mb_stripos($this->getTitle(), 'собак') !== false) {
+            $context->buildViolation('Про собак писать запрещено!')
+                ->atPath('title')
+                ->addViolation();
+        }
+        
+        if (preg_match_all('/\d+/',$this->getTitle()) > 0) {
+            $context->buildViolation('Нельзя использовать цифры в названии статьи!')
+                ->atPath('title')
+                ->addViolation();
+        }
     }
 }

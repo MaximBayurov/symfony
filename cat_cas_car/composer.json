@@ -7,6 +7,7 @@
         "php": ">=8.0",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-mbstring": "*",
         "ext-sodium": "*",
         "composer/package-versions-deprecated": "1.11.99.4",
         "demontpx/parsedown-bundle": "^3.0",
@@ -36,12 +37,12 @@
         "symfony/security-bundle": "5.*",
         "symfony/serializer": "5.3.*",
         "symfony/twig-bundle": "5.3.*",
+        "symfony/validator": "5.3.*",
         "symfony/webpack-encore-bundle": "^1.12",
         "symfony/yaml": "5.3.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/string-extra": "^3.3",
-        "twig/twig": "^2.12|^3.0",
-        "ext-mbstring": "*"
+        "twig/twig": "^2.12|^3.0"
     },
     "config": {
         "optimize-autoloader": true,
