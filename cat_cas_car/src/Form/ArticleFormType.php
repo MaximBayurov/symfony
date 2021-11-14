@@ -12,7 +12,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use function Clue\StreamFilter\fun;
 
 class ArticleFormType extends AbstractType
 {
@@ -29,6 +28,7 @@ class ArticleFormType extends AbstractType
             ->add('title', TextType::class, [
                 'label' => 'Укажите название статьи',
                 'help' => 'Не используйте в названии слово "собака"',
+                'required' => false,
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Описание статьи',
@@ -57,7 +57,8 @@ class ArticleFormType extends AbstractType
                     return sprintf('%s (id: %d)', $user->getFirstName(), $user->getId());
                 },
                 'placeholder' => 'Выберите автора статьи',
-                'choices' => $this->userRepository->findAllSortedByName()
+                'choices' => $this->userRepository->findAllSortedByName(),
+                'invalid_message' => 'Такой автор живёт лишь в сказках!'
             ])
         ;
         

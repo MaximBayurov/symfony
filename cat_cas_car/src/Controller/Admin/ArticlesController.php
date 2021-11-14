@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -52,19 +53,67 @@ class ArticlesController extends AbstractController
     ): Response
     {
         $form = $this->createForm(ArticleFormType::class);
+    
+    
+        if ($article = $this->handleFormRequest($form, $request, $manager, $filter)) {
+            $this->addFlash('flash_message', 'Статья успешно создана');
         
+            return $this->redirectToRoute('app_admin_articles');
+        }
+    
+    
+        return $this->render(
+            'admin/articles/create.html.twig', [
+                'articleForm' => $form->createView(),
+                'showError' => $form->isSubmitted(),
+            ]
+        );
+    }
+    
+    #[Route('/admin/articles/{id}/edit', name: 'app_admin_articles_edit')]
+    #[IsGranted("MANAGE", subject: "article")]
+    public function edit(
+        Article $article,
+        Request $request,
+        EntityManagerInterface $manager,
+        ArticleWordsFilter $filter
+    ): Response
+    {
+        $form = $this->createForm(ArticleFormType::class, $article);
+    
+        if ($article = $this->handleFormRequest($form, $request, $manager, $filter)) {
+            $this->addFlash('flash_message', 'Статья успешно изменена');
+        
+            return $this->redirectToRoute('app_admin_articles_edit', ['id' => $article->getId()]);
+        }
+    
+        return $this->render(
+            'admin/articles/edit.html.twig', [
+                'articleForm' => $form->createView(),
+                'showError' => $form->isSubmitted(),
+            ]
+        );
+    }
+    
+    private function handleFormRequest(
+        FormInterface $form,
+        Request $request,
+        EntityManagerInterface $manager,
+        ArticleWordsFilter $filter
+    ): ?Article
+    {
         $form->handleRequest($request);
-        
+    
         if ($form->isSubmitted() && $form->isValid()) {
             /**
              * @var Article $article
              */
             $article = $form->getData();
-            
+        
             $article
                 ->setPublishedAt(new \DateTimeImmutable())
             ;
-    
+        
             $filterWords = [
                 'стакан',
                 'клавиатура',
@@ -83,26 +132,13 @@ class ArticlesController extends AbstractController
                     $filterWords
                 )
             );
-            
+        
             $manager->persist($article);
             $manager->flush();
             
-            $this->addFlash('flash_message', 'Статья успешно создана');
-            
-            return $this->redirectToRoute('app_admin_articles');
+            return $article;
         }
-        
-        return $this->render(
-            'admin/articles/create.html.twig', [
-                'articleForm' => $form->createView()
-            ]
-        );
-    }
     
-    #[Route('/admin/articles/{id}/edit', name: 'app_admin_articles_edit')]
-    #[IsGranted("MANAGE", subject: "article")]
-    public function edit(Article $article): Response
-    {
-        return new Response('Здесь будет страница редактирования статьи: ' . $article->getTitle());
+        return null;
     }
 }
