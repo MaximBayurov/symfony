@@ -6,14 +6,6 @@
     <div class="container">
         <div class="row">
 
-            {% if error %}
-                <div class="col-12">
-                    <div class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </div>
-                </div>
-            {% endif %}
-
             <div class="col-sm-12">
 
                 {{ form_start(registrationForm, {
@@ -24,6 +16,7 @@
 
                     <h1 class="h3 mb-3 font-weight-normal">Регистрация</h1>
 
+                    {{ form_errors(registrationForm.email) }}
                     {{ form_row(registrationForm.email, {
                         attr: { placeholder: 'Ваш Email...' },
                         label_attr: { class: 'sr-only' }

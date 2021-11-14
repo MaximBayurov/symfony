@@ -56,15 +56,12 @@ class SecurityController extends AbstractController
         $form = $this->createForm(UserRegistrationFormType::class);
         
         $form->handleRequest($request);
-        /**
-         * @var User $user
-         */
-        $user = $form->getData();
-        $error = '';
         
-        if ($form->isSubmitted() && $spamFilter->filter($user->getEmail())) {
-            $error = "Ботам здесь не место";
-        } elseif ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            /**
+             * @var User $user
+             */
+            $user = $form->getData();
             
             $user
                 ->setPassword($passwordEncoder->encodePassword(
@@ -88,7 +85,6 @@ class SecurityController extends AbstractController
         return $this->render(
             'security/register.html.twig', [
                 'registrationForm' => $form->createView(),
-                'error' => $error,
             ]
         );
     }
