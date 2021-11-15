@@ -79,7 +79,9 @@ class ArticlesController extends AbstractController
         ArticleWordsFilter $filter
     ): Response
     {
-        $form = $this->createForm(ArticleFormType::class, $article);
+        $form = $this->createForm(ArticleFormType::class, $article, [
+            'enable_published_at' => true,
+        ]);
     
         if ($article = $this->handleFormRequest($form, $request, $manager, $filter)) {
             $this->addFlash('flash_message', 'Статья успешно изменена');

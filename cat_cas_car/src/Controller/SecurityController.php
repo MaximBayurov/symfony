@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\Model\UserRegistrationFormModel;
 use App\Form\UserRegistrationFormType;
 use App\Homework\RegistrationSpamFilter;
 use App\Security\LoginFormAuthenticator;
@@ -50,8 +51,7 @@ class SecurityController extends AbstractController
         UserPasswordEncoderInterface $passwordEncoder,
         GuardAuthenticatorHandler $guard,
         LoginFormAuthenticator $authenticator,
-        EntityManagerInterface $manager,
-        RegistrationSpamFilter $spamFilter
+        EntityManagerInterface $manager
     ) {
         $form = $this->createForm(UserRegistrationFormType::class);
         
@@ -59,14 +59,18 @@ class SecurityController extends AbstractController
         
         if ($form->isSubmitted() && $form->isValid()) {
             /**
-             * @var User $user
+             * @var UserRegistrationFormModel $userModel
              */
-            $user = $form->getData();
+            $userModel = $form->getData();
+            
+            $user = new User();
             
             $user
+                ->setEmail($userModel->getEmail())
+                ->setFirstName($userModel->getFirstName())
                 ->setPassword($passwordEncoder->encodePassword(
                     $user,
-                    $form->get('plainPassword')->getData()
+                    $userModel->getPlainPassword()
                 ))
                 ->setIsActive(true)
             ;

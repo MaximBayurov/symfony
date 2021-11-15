@@ -1,0 +1,15 @@
+{% use 'bootstrap_4_layout.html.twig' %}
+
+{% block form_widget_simple %}
+
+    {% if symbol is defined %}
+    <div class="input-group mb-2">
+        <div class="input-group-prepend" style="margin-bottom: -1px;">
+            <div class="input-group-text">{{ symbol|raw }}</div>
+        </div>
+        {{ parent() }}
+    </div>
+    {% else %}
+            {{ parent() }}
+    {% endif %}
+{% endblock %}
