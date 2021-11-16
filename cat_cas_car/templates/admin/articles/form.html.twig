@@ -2,7 +2,9 @@
                     {{ form_row(articleForm.title) }}
                     {{ form_row(articleForm.description) }}
                     {{ form_row(articleForm.body) }}
-                    {{ form_row(articleForm.publishedAt) }}
+                    {% if articleForm.publishedAt is defined %}
+                        {{ form_row(articleForm.publishedAt) }}
+                    {% endif %}
                     {{ form_row(articleForm.keywords) }}
                     {{ form_row(articleForm.author) }}
 

@@ -6,7 +6,7 @@ use App\Homework\RegistrationSpamFilter;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class UserEmailValidator extends ConstraintValidator
+class RegistrationSpamValidator extends ConstraintValidator
 {
     private RegistrationSpamFilter $spamFilter;
     
@@ -17,7 +17,7 @@ class UserEmailValidator extends ConstraintValidator
     
     public function validate($value, Constraint $constraint)
     {
-        /* @var $constraint \App\Validator\UserEmail */
+        /* @var $constraint \App\Validator\RegistrationSpam */
 
         if (null === $value || '' === $value) {
             return;

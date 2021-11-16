@@ -24,6 +24,11 @@ class ArticleFormType extends AbstractType
     
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /**  @var Article| null $article */
+        $article = $options['data'] ?? null;
+        
+        $cannotEditAuthor = $article && $article->getId() && $article->isPublished();
+        
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Укажите название статьи',
@@ -32,19 +37,11 @@ class ArticleFormType extends AbstractType
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Описание статьи',
-                'attr' => [
-                    'rows' => 3
-                ]
+                'rows' => 3
             ])
             ->add('body', TextareaType::class, [
                 'label' => 'Содержимое статьи',
-                'attr' => [
-                    'rows' => 10
-                ]
-            ])
-            ->add('publishedAt', null, [
-                'widget' => 'single_text',
-                'label' => 'Дата публикации статьи',
+                'rows' => 10
             ])
             ->add('keywords', TextType::class, [
                 'label' => 'Ключевые слова статьи',
@@ -58,9 +55,19 @@ class ArticleFormType extends AbstractType
                 },
                 'placeholder' => 'Выберите автора статьи',
                 'choices' => $this->userRepository->findAllSortedByName(),
-                'invalid_message' => 'Такой автор живёт лишь в сказках!'
+                'invalid_message' => 'Такой автор живёт лишь в сказках!',
+                'disabled' => $cannotEditAuthor
             ])
         ;
+        
+        if ($options['enable_published_at']) {
+            $builder
+                ->add('publishedAt', null, [
+                    'widget' => 'single_text',
+                    'label' => 'Дата публикации статьи',
+                ])
+            ;
+        }
         
         $builder->get('body')
             ->addModelTransformer(new CallbackTransformer(
@@ -97,6 +104,7 @@ class ArticleFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Article::class,
+            'enable_published_at' => false,
         ]);
     }
 }
