@@ -6,9 +6,12 @@ use App\Entity\Article;
 use App\Entity\Tag;
 use App\Entity\User;
 use App\Homework\ArticleContentProviderInterface;
+use App\Service\FileUploader;
 use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Exception;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\File;
 
 class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
 {
@@ -46,10 +49,14 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
     ];
     
     private ArticleContentProviderInterface $articleContent;
+    private FileUploader $articleFileUploader;
     
-    public function __construct(ArticleContentProviderInterface $articleContent)
-    {
+    public function __construct(
+        ArticleContentProviderInterface $articleContent,
+        FileUploader $articleFileUploader
+    ) {
         $this->articleContent = $articleContent;
+        $this->articleFileUploader = $articleFileUploader;
     }
     
     /**
@@ -76,8 +83,7 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
                 $article
                     ->setTitle($this->faker->randomElement(self::ARTICLE_TITLES))
                     ->setBody($articleContent)
-                    ->setDescription(mb_strimwidth($articleContent, 0, 50, '...'))
-                ;
+                    ->setDescription(mb_strimwidth($articleContent, 0, 50, '...'));
                 
                 if ($this->faker->boolean(60)) {
                     $article->setPublishedAt(
@@ -85,18 +91,21 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
                     );
                 }
                 
+                $fileName = $this->faker->randomElement(self::ARTICLE_IMAGES);
+    
                 $article
                     ->setAuthor($this->getRandomReference(User::class))
                     ->setLikeCount($this->faker->numberBetween(0, 10))
-                    ->setImageFilename($this->faker->randomElement(self::ARTICLE_IMAGES))
+                    ->setImageFilename(
+                        $this->articleFileUploader->uploadFile(new File(dirname(dirname(__DIR__)) . '/public/images/' . $fileName))
+                    )
                     ->setKeywords(
                         $this->faker->randomElements(
                             self::KEYWORDS,
                             $this->faker->numberBetween(0, count(self::KEYWORDS) - 1)
                         )
-                    )
-                ;
-    
+                    );
+                
                 for ($i = 0; $i < $this->faker->numberBetween(0, 5); $i++) {
                     $tag = $this->getRandomReference(Tag::class);
                     $article->addTag($tag);
