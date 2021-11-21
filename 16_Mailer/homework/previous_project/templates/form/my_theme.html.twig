@@ -1,0 +1,14 @@
+{% extends 'bootstrap_4_layout.html.twig' %}
+
+{% block email_widget -%}
+    {%- if symbol -%}
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">{{ symbol|default('@')|raw }}</span>
+            </div>
+            {{- block('form_widget_simple') -}}
+        </div>
+    {%- else -%}
+        {{- block('form_widget_simple') -}}
+    {%- endif -%}
+{%- endblock email_widget %}
