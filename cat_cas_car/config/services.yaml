@@ -8,6 +8,9 @@ parameters:
     articles_uploads: 'uploads/articles'
     articles_uploads_url: '/%articles_uploads%'
     articles_uploads_dir: '%kernel.project_dir%/public/%articles_uploads%'
+    router.request_context.scheme: '%env(SITE_BASE_SCHEME)%'
+    router.request_context.host: '%env(SITE_BASE_HOST)%'
+
 services:
     # default configuration for services in *this* file
     _defaults:

@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\Model\UserRegistrationFormModel;
 use App\Form\UserRegistrationFormType;
-use App\Homework\RegistrationSpamFilter;
 use App\Security\LoginFormAuthenticator;
+use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,13 +23,7 @@ class SecurityController extends AbstractController
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('target_path');
-        // }
-
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
@@ -51,7 +45,8 @@ class SecurityController extends AbstractController
         UserPasswordEncoderInterface $passwordEncoder,
         GuardAuthenticatorHandler $guard,
         LoginFormAuthenticator $authenticator,
-        EntityManagerInterface $manager
+        EntityManagerInterface $manager,
+        Mailer $mailer
     ) {
         $form = $this->createForm(UserRegistrationFormType::class);
         
@@ -78,6 +73,8 @@ class SecurityController extends AbstractController
             $manager->persist($user);
             $manager->flush();
     
+            $mailer->sendWelcomeMail($user);
+            
             return $guard->authenticateUserAndHandleSuccess(
                 $user,
                 $request,
