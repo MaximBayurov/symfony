@@ -8,10 +8,14 @@ use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class ArticleFormType extends AbstractType
 {
@@ -28,8 +32,34 @@ class ArticleFormType extends AbstractType
         $article = $options['data'] ?? null;
         
         $cannotEditAuthor = $article && $article->getId() && $article->isPublished();
+        $imagePlaceholder = $article
+            ?  $article->getImageFilename()
+            : 'Выберите изображение';
+        $imageConstraints = [
+            new Image([
+                'maxSize' => '2M',
+                'maxWidth' => 480,
+                'maxHeight' => 300,
+                'allowSquare' => false,
+            ])
+        ];
+        
+        if (! $article || ! $article->getImageFilename()) {
+            $imageConstraints[] = new NotNull([
+                'message' => 'Не выбрано изображение статьи',
+            ]);
+        }
         
         $builder
+            ->add('image', FileType::class, [
+                'label' => 'Изображение статьи',
+                'attr' => [
+                    'placeholder' => $imagePlaceholder,
+                ],
+                'constraints' => $imageConstraints,
+                'mapped' => false,
+                'required' => false,
+            ])
             ->add('title', TextType::class, [
                 'label' => 'Укажите название статьи',
                 'help' => 'Не используйте в названии слово "собака"',

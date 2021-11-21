@@ -7,11 +7,13 @@ use App\Entity\User;
 use App\Form\ArticleFormType;
 use App\Homework\ArticleWordsFilter;
 use App\Repository\ArticleRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -49,13 +51,13 @@ class ArticlesController extends AbstractController
     public function create(
         Request $request,
         EntityManagerInterface $manager,
-        ArticleWordsFilter $filter
+        ArticleWordsFilter $filter,
+        FileUploader $articleFileUploader
     ): Response
     {
-        $form = $this->createForm(ArticleFormType::class);
+        $form = $this->createForm(ArticleFormType::class, new Article());
     
-    
-        if ($article = $this->handleFormRequest($form, $request, $manager, $filter)) {
+        if ($article = $this->handleFormRequest($form, $request, $manager, $filter, $articleFileUploader)) {
             $this->addFlash('flash_message', 'Статья успешно создана');
         
             return $this->redirectToRoute('app_admin_articles');
@@ -76,14 +78,15 @@ class ArticlesController extends AbstractController
         Article $article,
         Request $request,
         EntityManagerInterface $manager,
-        ArticleWordsFilter $filter
+        ArticleWordsFilter $filter,
+        FileUploader $articleFileUploader
     ): Response
     {
         $form = $this->createForm(ArticleFormType::class, $article, [
             'enable_published_at' => true,
         ]);
     
-        if ($article = $this->handleFormRequest($form, $request, $manager, $filter)) {
+        if ($article = $this->handleFormRequest($form, $request, $manager, $filter, $articleFileUploader)) {
             $this->addFlash('flash_message', 'Статья успешно изменена');
         
             return $this->redirectToRoute('app_admin_articles_edit', ['id' => $article->getId()]);
@@ -101,7 +104,8 @@ class ArticlesController extends AbstractController
         FormInterface $form,
         Request $request,
         EntityManagerInterface $manager,
-        ArticleWordsFilter $filter
+        ArticleWordsFilter $filter,
+        FileUploader $articleFileUploader
     ): ?Article
     {
         $form->handleRequest($request);
@@ -112,9 +116,12 @@ class ArticlesController extends AbstractController
              */
             $article = $form->getData();
         
-            $article
-                ->setPublishedAt(new \DateTimeImmutable())
-            ;
+            /** @var UploadedFile|null $image */
+            $image = $form->get('image')->getData();
+            
+            if ($image) {
+                $article->setImageFilename($articleFileUploader->uploadFile($image, $article->getImageFilename()));
+            }
         
             $filterWords = [
                 'стакан',
