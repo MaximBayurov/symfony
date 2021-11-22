@@ -7,7 +7,7 @@ liip_imagine:
         flysystem_resolver:
             flysystem:
                 filesystem_service: oneup_flysystem.uploads_articles_filesystem
-                root_url: "%env(SITE_URL)%%articles_uploads_url%"
+                root_url: "//%env(SITE_BASE_HOST)%%articles_uploads_url%"
                 cache_prefix: media/cache
                 visibility: public
 
@@ -25,8 +25,8 @@ liip_imagine:
         articles_preview:
             quality: 75
             filters:
-                fixed: { width: 480, height: 300 }
+                thumbnail: { size: [ 240, 240 ], mode: outbound }
         articles_detail:
             quality: 90
             filters:
-                fixed: { width: 750, height: 500 }
+                thumbnail: { size: [ 480, 480 ], mode: outbound }

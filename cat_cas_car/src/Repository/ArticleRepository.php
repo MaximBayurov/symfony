@@ -90,4 +90,50 @@ class ArticleRepository extends ServiceEntityRepository
         return $queryBuilder
             ->orderBy('a.createdAt', 'DESC');
     }
+    
+    public function findAllPublishedLastWeek(): array
+    {
+        return $this->published($this->latest())
+            ->andWhere('a.publishedAt >= :week_ago')
+            ->setParameter('week_ago', new \DateTime('-1 week'))
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    
+    public function getCreatedCount(\DateTime $from, \DateTime $to): int
+    {
+        $result =  $this->latest()
+            ->andWhere('a.createdAt >= :from')
+            ->andWhere('a.createdAt <= :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->select('COUNT(a.id) as count')
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+        
+        if (!$result) {
+            return 0;
+        }
+        return (int)$result['count'];
+    }
+    
+    public function getPublishedCount(\DateTime $from, \DateTime $to)
+    {
+        $result =  $this->published($this->latest())
+            ->andWhere('a.publishedAt >= :from')
+            ->andWhere('a.publishedAt <= :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->select('COUNT(a.id) as count')
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    
+        if (!$result) {
+            return 0;
+        }
+        return (int)$result['count'];
+    }
 }
