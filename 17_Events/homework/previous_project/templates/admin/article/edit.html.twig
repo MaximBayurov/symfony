@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Изменение статьи{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="p-4 border rounded-lg mb-4 shadow-sm bg-white">
+
+                    <h1>Изменение статьи</h1>
+                    <a href="{{ uploaded_asset('article_uploads_url', articleForm.vars.data.imageFilename)}}" target="_blank">
+                        <img src="{{ articleForm.vars.data.imageFilename | imagine_filter('articles_preview') }}" height="100">
+                    </a>
+                    {{ form_start(articleForm) }}
+                    {{ form_widget(articleForm) }}
+
+                    <button type="submit" class="btn btn-primary">Изменить</button>
+                    {{ form_end(articleForm) }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
