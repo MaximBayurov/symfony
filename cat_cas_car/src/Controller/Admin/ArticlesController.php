@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Article;
 use App\Entity\User;
+use App\Events\ArticleCreatedEvent;
 use App\Form\ArticleFormType;
 use App\Homework\ArticleWordsFilter;
 use App\Repository\ArticleRepository;
@@ -12,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,14 +54,17 @@ class ArticlesController extends AbstractController
         Request $request,
         EntityManagerInterface $manager,
         ArticleWordsFilter $filter,
-        FileUploader $articleFileUploader
+        FileUploader $articleFileUploader,
+        EventDispatcherInterface $dispatcher
     ): Response
     {
         $form = $this->createForm(ArticleFormType::class, new Article());
     
         if ($article = $this->handleFormRequest($form, $request, $manager, $filter, $articleFileUploader)) {
             $this->addFlash('flash_message', 'Статья успешно создана');
-        
+    
+            $dispatcher->dispatch(new ArticleCreatedEvent($article));
+            
             return $this->redirectToRoute('app_admin_articles');
         }
     
