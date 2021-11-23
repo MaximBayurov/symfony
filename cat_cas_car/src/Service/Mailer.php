@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Article;
 use App\Entity\User;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
@@ -19,6 +20,22 @@ class Mailer
     public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
+    }
+    
+    private function send(string $template, User $user, string $subject, \Closure $callback = null)
+    {
+        $email = (new TemplatedEmail())
+            ->from(new Address(self::SETTINGS['FROM'], 'Cat-Cas-Car'))
+            ->to(new Address($user->getEmail(), $user->getFirstName()))
+            ->subject($subject)
+            ->htmlTemplate($template)
+        ;
+        
+        if ($callback) {
+            $callback($email);
+        }
+        
+        $this->mailer->send($email);
     }
     
     public function sendWelcomeMail(User $user): void
@@ -47,22 +64,6 @@ class Mailer
         );
     }
     
-    private function send(string $template, User $user, string $subject, \Closure $callback = null)
-    {
-        $email = (new TemplatedEmail())
-            ->from(new Address(self::SETTINGS['FROM'], 'Cat-Cas-Car'))
-            ->to(new Address($user->getEmail(), $user->getFirstName()))
-            ->subject($subject)
-            ->htmlTemplate($template)
-        ;
-        
-        if ($callback) {
-            $callback($email);
-        }
-        
-        $this->mailer->send($email);
-    }
-    
     public function sendReport(string $emailAddress, string $reportFilename)
     {
     
@@ -75,5 +76,21 @@ class Mailer
         ;
     
         $this->mailer->send($email);
+    }
+    
+    public function sendNewArticleNotification(User $user, Article $article)
+    {
+        $this->send(
+            'email/new_article.html.twig',
+            $user,
+            'Была создана новая статья - ' . $article->getTitle(),
+            function (TemplatedEmail $email) use ($article) {
+                $email
+                    ->context([
+                        'article' => $article
+                    ])
+                ;
+            }
+        );
     }
 }

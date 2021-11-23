@@ -3,12 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Events\UserRegisteredEvent;
 use App\Form\Model\UserRegistrationFormModel;
 use App\Form\UserRegistrationFormType;
 use App\Security\LoginFormAuthenticator;
-use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,7 +47,7 @@ class SecurityController extends AbstractController
         GuardAuthenticatorHandler $guard,
         LoginFormAuthenticator $authenticator,
         EntityManagerInterface $manager,
-        Mailer $mailer
+        EventDispatcherInterface $dispatcher
     ) {
         $form = $this->createForm(UserRegistrationFormType::class);
         
@@ -73,7 +74,7 @@ class SecurityController extends AbstractController
             $manager->persist($user);
             $manager->flush();
     
-            $mailer->sendWelcomeMail($user);
+            $dispatcher->dispatch(new UserRegisteredEvent($user));
             
             return $guard->authenticateUserAndHandleSuccess(
                 $user,
