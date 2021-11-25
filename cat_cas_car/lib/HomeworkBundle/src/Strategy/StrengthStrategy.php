@@ -15,7 +15,7 @@ class StrengthStrategy implements Strategy
     public function next(array $units, int $resource): ?Unit
     {
         usort($units, function (Unit $unit1, Unit $unit2) {
-            return $unit1->getStrength() > $unit2->getStrength() ? -1 : 1;
+            return $unit2->getStrength() <=> $unit1->getStrength();
         });
     
         foreach ($units as $unit) {

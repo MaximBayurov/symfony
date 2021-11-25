@@ -15,7 +15,7 @@ class HealthStrategy implements Strategy
     public function next(array $units, int $resource): ?Unit
     {
         usort($units, function (Unit $unit1, Unit $unit2) {
-            return $unit1->getHealth() > $unit2->getHealth() ? -1 : 1;
+            return $unit2->getHealth() <=> $unit1->getHealth();
         });
     
         foreach ($units as $unit) {
