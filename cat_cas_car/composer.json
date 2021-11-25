@@ -19,6 +19,7 @@
         "knplabs/knp-paginator-bundle": "^5.7",
         "league/html-to-markdown": "^5.0",
         "liip/imagine-bundle": "^2.7",
+        "maxim/article-content-provider-bundle": "dev-master",
         "nesbot/carbon": "^2.53",
         "nexylan/slack-bundle": "^2.3",
         "oneup/flysystem-bundle": "4.1.4",
@@ -26,6 +27,7 @@
         "phpdocumentor/reflection-docblock": "^5.3",
         "sensio/framework-extra-bundle": "^6.2",
         "stof/doctrine-extensions-bundle": "^1.6",
+        "symfony-skillbox-homework/unit-factory-bundle": "dev-master",
         "symfony/asset": "5.3.*",
         "symfony/console": "5.3.*",
         "symfony/dotenv": "5.3.*",
@@ -100,5 +102,15 @@
         "symfony/maker-bundle": "^1.34",
         "symfony/stopwatch": "5.3.*",
         "symfony/web-profiler-bundle": "5.3.*"
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/bayurov/article-content-provider-bundle.git"
+        },
+        {
+            "type": "path",
+            "url": "lib/HomeworkBundle"
+        }
+    ]
 }

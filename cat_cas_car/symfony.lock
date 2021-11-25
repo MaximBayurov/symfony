@@ -158,6 +158,9 @@
             "config/routes/liip_imagine.yaml"
         ]
     },
+    "maxim/article-content-provider-bundle": {
+        "version": "dev-master"
+    },
     "monolog/monolog": {
         "version": "2.3.5"
     },
@@ -259,6 +262,9 @@
         "files": [
             "config/packages/stof_doctrine_extensions.yaml"
         ]
+    },
+    "symfony-skillbox-homework/unit-factory-bundle": {
+        "version": "dev-master"
     },
     "symfony/asset": {
         "version": "v5.3.4"

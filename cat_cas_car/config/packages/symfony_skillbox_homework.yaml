@@ -1,0 +1,3 @@
+symfony_skillbox_homework:
+  strategy:             symfony_skillbox_homework.strategy_strength
+  unit_provider:        App\Homework\MyUnitsProvider
